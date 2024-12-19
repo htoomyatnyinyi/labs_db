@@ -1,0 +1,37 @@
+{
+  "name": "backend",
+  "version": "2.0.9",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "labs_db": "nodemon src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/htoomyatnyinyi/labs_db.git"
+  },
+  "author": "HTOO_MYAT_NYI_NYI",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/htoomyatnyinyi/labs_db/issues"
+  },
+  "homepage": "https://github.com/htoomyatnyinyi/labs_db#readme",
+  "description": "",
+  "dependencies": {
+    "axios": "^1.7.9",
+    "bcrypt": "^5.1.1",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-session": "^1.18.1",
+    "http": "^0.0.1-security",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^1.4.5-lts.1",
+    "mysql2": "^3.11.5",
+    "nodemon": "^3.1.9",
+    "socket.io": "^4.8.1",
+    "uuid": "^11.0.3"
+  }
+}
