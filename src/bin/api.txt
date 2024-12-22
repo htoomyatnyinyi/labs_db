@@ -1,0 +1,158 @@
+import express from "express";
+import { sql_db } from "./db.js";
+
+const app = express();
+app.use(express.json());
+
+const PORT = process.env.PORT || 5000;
+
+/**
+ * USER ROUTES
+ */
+
+// Create a new user
+app.post("/users", (req, res) => {
+  const { username, email, password } = req.body;
+  const query = `INSERT INTO userAccount (username, email, password) VALUES (?, ?, ?)`;
+  sql_db.query(query, [username, email, password], (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.status(201).json({ message: "User created successfully", userId: results.insertId });
+  });
+});
+
+// Get all users
+app.get("/users", (req, res) => {
+  const query = `SELECT * FROM userAccount`;
+  sql_db.query(query, (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(results);
+  });
+});
+
+// Get a specific user
+app.get("/users/:id", (req, res) => {
+  const { id } = req.params;
+  const query = `SELECT * FROM userAccount WHERE id = ?`;
+  sql_db.query(query, [id], (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+    if (results.length === 0) return res.status(404).json({ message: "User not found" });
+    res.json(results[0]);
+  });
+});
+
+// Update a user
+app.put("/users/:id", (req, res) => {
+  const { id } = req.params;
+  const updates = req.body;
+  const query = `UPDATE userAccount SET ? WHERE id = ?`;
+  sql_db.query(query, [updates, id], (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ message: "User updated successfully" });
+  });
+});
+
+// Delete a user
+app.delete("/users/:id", (req, res) => {
+  const { id } = req.params;
+  const query = `DELETE FROM userAccount WHERE id = ?`;
+  sql_db.query(query, [id], (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ message: "User deleted successfully" });
+  });
+});
+
+/**
+ * JOB POST ROUTES
+ */
+
+// Create a new job post
+app.post("/jobs", (req, res) => {
+  const { title, description, salary, location, company_name, employmentType } = req.body;
+  const query = `INSERT INTO jobPost (title, description, salary, location, company_name, employmentType) VALUES (?, ?, ?, ?, ?, ?)`;
+  sql_db.query(query, [title, description, salary, location, company_name, employmentType], (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.status(201).json({ message: "Job post created successfully", postId: results.insertId });
+  });
+});
+
+// Get all job posts
+app.get("/jobs", (req, res) => {
+  const query = `SELECT * FROM jobPost`;
+  sql_db.query(query, (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(results);
+  });
+});
+
+// Get a specific job post
+app.get("/jobs/:id", (req, res) => {
+  const { id } = req.params;
+  const query = `SELECT * FROM jobPost WHERE id = ?`;
+  sql_db.query(query, [id], (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+    if (results.length === 0) return res.status(404).json({ message: "Job post not found" });
+    res.json(results[0]);
+  });
+});
+
+// Update a job post
+app.put("/jobs/:id", (req, res) => {
+  const { id } = req.params;
+  const updates = req.body;
+  const query = `UPDATE jobPost SET ? WHERE id = ?`;
+  sql_db.query(query, [updates, id], (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ message: "Job post updated successfully" });
+  });
+});
+
+// Delete a job post
+app.delete("/jobs/:id", (req, res) => {
+  const { id } = req.params;
+  const query = `DELETE FROM jobPost WHERE id = ?`;
+  sql_db.query(query, [id], (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ message: "Job post deleted successfully" });
+  });
+});
+
+/**
+ * APPLICATION ROUTES
+ */
+
+// Apply for a job
+app.post("/applications", (req, res) => {
+  const { user_id, post_id, resume_id } = req.body;
+  const query = `INSERT INTO userAppliedJob (user_id, post_id, resume_id) VALUES (?, ?, ?)`;
+  sql_db.query(query, [user_id, post_id, resume_id], (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.status(201).json({ message: "Application submitted successfully", applicationId: results.insertId });
+  });
+});
+
+// Get all applications
+app.get("/applications", (req, res) => {
+  const query = `SELECT * FROM userAppliedJob`;
+  sql_db.query(query, (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(results);
+  });
+});
+
+// Get applications by user
+app.get("/applications/user/:user_id", (req, res) => {
+  const { user_id } = req.params;
+  const query = `SELECT * FROM userAppliedJob WHERE user_id = ?`;
+  sql_db.query(query, [user_id], (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(results);
+  });
+});
+
+/**
+ * START SERVER
+ */
+
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});

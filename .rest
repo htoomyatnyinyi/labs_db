@@ -1,0 +1,60 @@
+##############################################################
+### API POST REQUEST FROM LOCALHOST:3000 OT LOCALHOST:8080 ###
+##############################################################
+
+
+POST http://localhost:8080/signin
+Content-Type: application/json
+
+{
+    "identifier": "labs@mlab.com",
+    "password": "labs"
+}
+###
+
+POST http://localhost:8080/signup
+Content-Type: application/json
+
+{
+    "identifier": "labs@mlab.com",
+    "password": "labs",
+    "confirmPassword": "labs"
+}
+###
+GET http://localhost:8080/profile
+###
+PUT http://localhost:8080/profile
+Content-Type: application/json
+
+{
+    "username": "abc",
+    "phone": "1234567328",
+    "first_name": "a",
+    "last_name": "f",
+    "gender": "male"
+}
+###
+
+# DELETE http://localhost:8080/profile
+### 
+POST http://localhost:8080/jobs
+Content-Type: application/json
+
+{
+    "title": "Software Engi333neer",
+    "description": "Develop and maintain software applications.",
+    "company_name": "Acme Corp",
+    "employmentType": "Full-time",
+    "salary": 80000,
+    "location": "New York",
+    "address": "123 Main St",
+    "license": "Some license",
+    "category": "Technology",
+    "company_logo": "logo.png",
+    "post_img": "image.jpg",
+    "responsibilities": "Coding, testing",
+    "requirements": "Java, Python"
+}
+
+###
+GET http://localhost:8080/jobs/

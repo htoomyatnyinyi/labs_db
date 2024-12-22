@@ -10,6 +10,7 @@ import { Server as SocketIoServer } from "socket.io";
 import authRoute from "./routes/auth.js";
 import messageRoute from "./routes/messages.js";
 import userRoute from "./routes/user.js";
+import jobRoute from "./routes/jobs.js";
 
 // SERVER config
 dotenv.config();
@@ -37,9 +38,11 @@ io.on("connection", (socket) => {
   });
 });
 
-// Middleware
 app.use(express.json());
+// Middleware to parse URL-encoded request bodies (for forms)
+app.use(express.urlencoded({ extended: true })); // Important: extended: true for complex objects
 app.use(cookieParser());
+
 app.use(
   cors({
     origin: "http://localhost:3000", // Replace with your frontend URL
@@ -58,6 +61,7 @@ app.use(
 // Routes
 app.use("/", authRoute);
 app.use("/", userRoute);
+app.use("/", jobRoute);
 app.use("/", messageRoute(io));
 
 server.listen(PORT, () => {

@@ -48,7 +48,7 @@ router.post("/signup", (req, res) => {
   }
 
   const checkUserQuery =
-    "SELECT * FROM users WHERE email = ? OR phone = ? OR username = ?";
+    "SELECT * FROM useraccount WHERE email = ? OR phone = ? OR username = ?";
   const checkUserParams = [identifier, identifier, identifier];
 
   sql_db.query(checkUserQuery, checkUserParams, (err, results) => {
@@ -76,7 +76,7 @@ router.post("/signup", (req, res) => {
 
     // SQL
     const insertUserQuery =
-      "INSERT INTO users (email, phone, password, username) VALUES (?, ?, ?, ?)";
+      "INSERT INTO useraccount (email, phone, password, username) VALUES (?, ?, ?, ?)";
 
     const insertUserParams = [
       identifier.includes("@mlab.com") ? identifier : null,
@@ -114,7 +114,7 @@ router.post("/signin", (req, res) => {
   }
 
   const query =
-    "SELECT * FROM users WHERE email = ? OR phone = ? OR username = ?";
+    "SELECT * FROM useraccount WHERE email = ? OR phone = ? OR username = ?";
   const queryParams = [identifier, identifier, identifier];
 
   sql_db.query(query, queryParams, (err, results) => {

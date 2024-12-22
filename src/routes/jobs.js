@@ -3,522 +3,212 @@ import { sql_db } from "../db/db.js";
 import authenticate from "../middleware/authenticate.js";
 
 const router = express.Router();
-
-// Get all job postings excluding applied jobs for the authenticated user
-router.get("/allposting", authenticate, (req, res) => {
-  const userId = req.user.id; // Get the user ID from the token
-
-  sql_db.query(
-    `
-    SELECT 
-      p.id, 
-      p.title, 
-      p.company, 
-      p.salary,
-      p.location, 
-      p.category, 
-      p.employmentType, 
-      p.posted_at AS posted, 
-      p.description, 
-      p.address,
-      GROUP_CONCAT(DISTINCT r.responsibility SEPARATOR '; ') AS responsibilities,
-      GROUP_CONCAT(DISTINCT rq.requirement SEPARATOR '; ') AS requirements
-    FROM 
-      posts p
-    LEFT JOIN 
-      responsibilities r ON p.id = r.post_id
-    LEFT JOIN 
-      requirements rq ON p.id = rq.post_id
-    WHERE 
-      p.id NOT IN (SELECT post_id FROM apply_job WHERE user_id = ?)
-    GROUP BY 
-      p.id
-  `,
-    [userId],
-    (err, results) => {
-      if (err) {
-        return res.status(500).json({ error: err.message });
-      }
-      res.json(results);
-    }
-  );
+router.post("/post", authenticate, (req, res) => {
+  const data = req.body;
+  console.log(data, "post");
 });
-
-// applied job ဖြစ်ပြီးသားကို job listing မှာမပြပေးတော့ပါ။
-// // Get all job postings with responsibilities and requirements
-// router.get("/allposting", authenticate, (req, res) => {
-//   sql_db.query(
-//     `
-//     SELECT
-//       p.id,
-//       p.title,
-//       p.company,
-//       p.salary,
-//       p.location,
-//       p.category,
-//       p.employmentType,
-//       p.posted_at AS posted,
-//       p.description,
-//       p.address,
-//       GROUP_CONCAT(DISTINCT r.responsibility SEPARATOR '; ') AS responsibilities,
-//       GROUP_CONCAT(DISTINCT rq.requirement SEPARATOR '; ') AS requirements
-//     FROM
-//       posts p
-//     LEFT JOIN
-//       responsibilities r ON p.id = r.post_id
-//     LEFT JOIN
-//       requirements rq ON p.id = rq.post_id
-//     GROUP BY
-//       p.id
-//   `,
-//     (err, results) => {
-//       if (err) {
-//         return res.status(500).json({ error: err.message });
-//       }
-//       res.json(results);
-//     }
-//   );
-// });
-
-// router.post("/create-posting", (req, res) => {
-//   const {
-//     title,
-//     description,
-//     responsibilities,
-//     requirements,
-//     salary,
-//     location,
-//     address,
-//   } = req.body;
-
-//   console.log(
-//     title,
-//     description,
-//     responsibilities,
-//     requirements,
-//     salary,
-//     location,
-//     address
-//   );
-//   if (responsibilities && responsibilities.length > 0) {
-//     const data = responsibilities.map((r) => r);
-//     console.log(data, "at responsibilities");
-//   }
-// });
-
-// Create a new job posting
-
-router.post("/create-posting", authenticate, (req, res) => {
+// Add a new job post with responsibilities and requirements
+router.post("/jobs", authenticate, (req, res) => {
   const {
     title,
     description,
-    responsibilities,
-    requirements,
     salary,
     location,
     address,
+    company_name,
+    license,
+    category,
+    company_logo,
+    post_img,
+    employmentType,
+    responsibilities,
+    requirements,
   } = req.body;
 
+  const postQuery = `INSERT INTO jobPost (title, description, salary, location, address, company_name, license, category, company_logo, post_img, employmentType) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+
   sql_db.query(
-    "INSERT INTO posts (title, description, salary, location, address) VALUES (?, ?, ?, ?, ?)",
-    [title, description, salary, location, address],
-    (err, results) => {
-      if (err) {
-        return res.status(500).json({ error: err.message });
-      }
-      const postId = results.insertId;
+    postQuery,
+    [
+      title,
+      description,
+      salary,
+      location,
+      address,
+      company_name,
+      license,
+      category,
+      company_logo,
+      post_img,
+      employmentType,
+    ],
+    (err, postResults) => {
+      if (err) return res.status(500).json({ error: err.message });
+
+      const postId = postResults.insertId;
 
       // Insert responsibilities
-      if (responsibilities && responsibilities.length > 0) {
-        const responsibilityValues = responsibilities.map((r) => [postId, r]);
-        sql_db.query(
-          "INSERT INTO responsibilities (post_id, responsibility) VALUES ?",
-          [responsibilityValues],
-          (err) => {
-            if (err) {
-              return res.status(500).json({ error: err.message });
-            }
-          }
-        );
+      const responsibilityQuery = `INSERT INTO jobResponsibilities (post_id, responsibility) VALUES ?`;
+      // Validate responsibilities
+      if (!Array.isArray(responsibilities)) {
+        return res
+          .status(400)
+          .json({ error: "Responsibilities must be an array." });
       }
 
-      // Insert requirements
-      if (requirements && requirements.length > 0) {
-        const requirementValues = requirements.map((r) => [postId, r]);
-        sql_db.query(
-          "INSERT INTO requirements (post_id, requirement) VALUES ?",
-          [requirementValues],
-          (err) => {
-            if (err) {
-              return res.status(500).json({ error: err.message });
-            }
-          }
-        );
+      try {
+        const responsibilityValues = responsibilities.map((resp) => [resp]);
+
+        // Proceed with your database logic
+        console.log("Mapped Responsibilities:", responsibilityValues);
+      } catch (error) {
+        console.error("Error:", error.message);
+        res.status(500).json({ error: "Internal Server Error" });
       }
 
-      res.status(201).json({ id: postId });
+      //   const responsibilityValues = responsibilities.map((resp) => [
+      //     postId,
+      //     resp,
+      //   ]);
+
+      sql_db.query(responsibilityQuery, [responsibilityValues], (err) => {
+        if (err) return res.status(500).json({ error: err.message });
+
+        // Insert requirements
+        const requirementQuery = `INSERT INTO jobRequirements (post_id, requireme nt) VALUES ?`;
+        const requirementValues = requirements.map((req) => [postId, req]);
+
+        sql_db.query(requirementQuery, [requirementValues], (err) => {
+          if (err) return res.status(500).json({ error: err.message });
+
+          res
+            .status(201)
+            .json({ message: "Job post created successfully", postId });
+        });
+      });
     }
   );
 });
 
-// Get a job posting by ID
-router.get("/post/:id", (req, res) => {
+router.get("/jobs", (req, res) => {
+  const postQuery = `SELECT * FROM jobpost`;
+  sql_db.query(postQuery, (err, getJobs) => {
+    if (err) return res.status(500).json({ error: err.message });
+    if (getJobs.length === 0)
+      return res.status(404).json({ message: "Job post not found" });
+    res.json(getJobs);
+  });
+});
+
+// Get a single job post with its responsibilities and requirements
+router.get("/jobs/:id", (req, res) => {
   const { id } = req.params;
-  sql_db.query(
-    `
-    SELECT 
-      p.id, 
-      p.title, 
-      p.company, 
-      p.location, 
-      p.category, 
-      p.employmentType, 
-      p.posted_at AS posted, 
-      p.description, 
-      p.address,
-      GROUP_CONCAT(DISTINCT r.responsibility SEPARATOR '; ') AS responsibilities,
-      GROUP_CONCAT(DISTINCT rq.requirement SEPARATOR '; ') AS requirements
-    FROM 
-      posts p
-    LEFT JOIN 
-      responsibilities r ON p.id = r.post_id
-    LEFT JOIN 
-      requirements rq ON p.id = rq.post_id
-    WHERE 
-      p.id = ?
-    GROUP BY 
-      p.id
-  `,
-    [id],
-    (err, results) => {
-      if (err) {
-        return res.status(500).json({ error: err.message });
-      }
-      if (results.length === 0) {
-        return res.status(404).json({ message: "Job posting not found" });
-      }
-      res.json(results[0]);
-    }
-  );
+
+  const postQuery = `SELECT * FROM jobPost WHERE id = ?`;
+  sql_db.query(postQuery, [id], (err, postResults) => {
+    if (err) return res.status(500).json({ error: err.message });
+
+    if (postResults.length === 0)
+      return res.status(404).json({ message: "Job post not found" });
+
+    const responsibilitiesQuery = `SELECT responsibility FROM jobResponsibilities WHERE post_id = ?`;
+    sql_db.query(responsibilitiesQuery, [id], (err, responsibilities) => {
+      if (err) return res.status(500).json({ error: err.message });
+
+      const requirementsQuery = `SELECT requirement FROM jobRequirements WHERE post_id = ?`;
+      sql_db.query(requirementsQuery, [id], (err, requirements) => {
+        if (err) return res.status(500).json({ error: err.message });
+
+        res.json({
+          ...postResults[0],
+          responsibilities: responsibilities.map((r) => r.responsibility),
+          requirements: requirements.map((r) => r.requirement),
+        });
+      });
+    });
+  });
 });
 
-// Update a job posting by ID
-router.put("/post/:id", authenticate, (req, res) => {
+// Update a job post and its responsibilities and requirements
+router.put("/jobs/:id", (req, res) => {
   const { id } = req.params;
   const {
     title,
     description,
-    responsibilities,
-    requirements,
     salary,
     location,
     address,
+    company_name,
+    license,
+    category,
+    company_logo,
+    post_img,
+    employmentType,
+    responsibilities,
+    requirements,
   } = req.body;
+
+  const postQuery = `UPDATE jobPost SET title = ?, description = ?, salary = ?, location = ?, address = ?, company_name = ?, license = ?, category = ?, company_logo = ?, post_img = ?, employmentType = ? WHERE id = ?`;
+
   sql_db.query(
-    "UPDATE posts SET title = ?, description = ?, salary = ?, location = ?, address = ? WHERE id = ?",
-    [title, description, salary, location, address, id],
-    (err, results) => {
-      if (err) {
-        return res.status(500).json({ error: err.message });
-      }
-      if (results.affectedRows === 0) {
-        return res.status(404).json({ message: "Job posting not found" });
-      }
+    postQuery,
+    [
+      title,
+      description,
+      salary,
+      location,
+      address,
+      company_name,
+      license,
+      category,
+      company_logo,
+      post_img,
+      employmentType,
+      id,
+    ],
+    (err) => {
+      if (err) return res.status(500).json({ error: err.message });
 
       // Update responsibilities
-      if (responsibilities) {
-        sql_db.query(
-          "DELETE FROM responsibilities WHERE post_id = ?",
-          [id],
-          (err) => {
-            if (err) {
-              return res.status(500).json({ error: err.message });
-            }
-            const responsibilityValues = responsibilities.map((r) => [id, r]);
-            sql_db.query(
-              "INSERT INTO responsibilities (post_id, responsibility) VALUES ?",
-              [responsibilityValues],
-              (err, result) => {
-                if (err) {
-                  return res.status(500).json({ error: err.message });
-                }
-                console.log(
-                  result.affectedRows,
-                  result.insertId,
-                  result.warningStatus
-                );
-              }
-            );
-          }
-        );
-      }
+      const deleteResponsibilitiesQuery = `DELETE FROM jobResponsibilities WHERE post_id = ?`;
+      sql_db.query(deleteResponsibilitiesQuery, [id], (err) => {
+        if (err) return res.status(500).json({ error: err.message });
 
-      // Update requirements
-      if (requirements) {
-        sql_db.query(
-          "DELETE FROM requirements WHERE post_id = ?",
-          [id],
-          (err) => {
-            if (err) {
-              return res.status(500).json({ error: err.message });
-            }
-            const requirementValues = requirements.map((r) => [id, r]);
-            sql_db.query(
-              "INSERT INTO requirements (post_id, requirement) VALUES ?",
-              [requirementValues],
-              (err) => {
-                if (err) {
-                  return res.status(500).json({ error: err.message });
-                }
-              }
-            );
-          }
-        );
-      }
+        const responsibilityQuery = `INSERT INTO jobResponsibilities (post_id, responsibility) VALUES ?`;
+        const responsibilityValues = responsibilities.map((resp) => [id, resp]);
 
-      res.json({ message: "Job posting updated successfully" });
+        sql_db.query(responsibilityQuery, [responsibilityValues], (err) => {
+          if (err) return res.status(500).json({ error: err.message });
+
+          // Update requirements
+          const deleteRequirementsQuery = `DELETE FROM jobRequirements WHERE post_id = ?`;
+          sql_db.query(deleteRequirementsQuery, [id], (err) => {
+            if (err) return res.status(500).json({ error: err.message });
+
+            const requirementQuery = `INSERT INTO jobRequirements (post_id, requirement) VALUES ?`;
+            const requirementValues = requirements.map((req) => [id, req]);
+
+            sql_db.query(requirementQuery, [requirementValues], (err) => {
+              if (err) return res.status(500).json({ error: err.message });
+
+              res.json({ message: "Job post updated successfully" });
+            });
+          });
+        });
+      });
     }
   );
 });
 
-// Delete a job posting by ID
-router.delete("/post/:id", authenticate, (req, res) => {
+// Delete a job post with its responsibilities and requirements
+router.delete("/jobs/:id", (req, res) => {
   const { id } = req.params;
-  sql_db.query("DELETE FROM posts WHERE id = ?", [id], (err, results) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
-    }
-    if (results.affectedRows === 0) {
-      return res.status(404).json({ message: "Job posting not found" });
-    }
-    res.json({ message: "Job posting deleted successfully" });
+
+  const query = `DELETE FROM jobPost WHERE id = ?`;
+  sql_db.query(query, [id], (err) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ message: "Job post deleted successfully" });
   });
 });
 
 export default router;
-
-// THE CODE UPDATE FROM DB.JS AND JOBS.JS UPDAET FROM CHATGPT.
-
-// import express from "express";
-// import { sql_db } from "../db.js";
-// import verifyToken from "../middleware/verifyToken.js";
-
-// const router = express.Router();
-
-// // Get all job postings with responsibilities and requirements
-// router.get("/allposting", (req, res) => {
-//   sql_db.query(
-//     `
-//     SELECT
-//       p.id,
-//       p.title,
-//       p.company,
-//       p.location,
-//       p.category,
-//       p.employmentType,
-//       p.posted_at AS posted,
-//       p.description,
-//       p.address,
-//       GROUP_CONCAT(DISTINCT r.responsibility SEPARATOR '; ') AS responsibilities,
-//       GROUP_CONCAT(DISTINCT rq.requirement SEPARATOR '; ') AS requirements
-//     FROM
-//       posts p
-//     LEFT JOIN
-//       responsibilities r ON p.id = r.post_id
-//     LEFT JOIN
-//       requirements rq ON p.id = rq.post_id
-//     GROUP BY
-//       p.id
-//   `,
-//     (err, results) => {
-//       if (err) {
-//         return res.status(500).json({ error: err.message });
-//       }
-//       res.json(results);
-//     }
-//   );
-// });
-
-// // Create a new job posting
-// router.post("/create-posting", verifyToken, (req, res) => {
-//   const {
-//     title,
-//     description,
-//     responsibilities,
-//     requirements,
-//     salary,
-//     location,
-//     address,
-//   } = req.body;
-//   sql_db.query(
-//     "INSERT INTO posts (title, description, salary, location, address) VALUES (?, ?, ?, ?, ?)",
-//     [title, description, salary, location, address],
-//     (err, results) => {
-//       if (err) {
-//         return res.status(500).json({ error: err.message });
-//       }
-//       const postId = results.insertId;
-
-//       // Insert responsibilities
-//       if (responsibilities && responsibilities.length > 0) {
-//         const responsibilityValues = responsibilities.map((r) => [postId, r]);
-//         sql_db.query(
-//           "INSERT INTO responsibilities (post_id, responsibility) VALUES ?",
-//           [responsibilityValues],
-//           (err) => {
-//             if (err) {
-//               return res.status(500).json({ error: err.message });
-//             }
-//           }
-//         );
-//       }
-
-//       // Insert requirements
-//       if (requirements && requirements.length > 0) {
-//         const requirementValues = requirements.map((r) => [postId, r]);
-//         sql_db.query(
-//           "INSERT INTO requirements (post_id, requirement) VALUES ?",
-//           [requirementValues],
-//           (err) => {
-//             if (err) {
-//               return res.status(500).json({ error: err.message });
-//             }
-//           }
-//         );
-//       }
-
-//       res.status(201).json({ id: postId });
-//     }
-//   );
-// });
-
-// // Get a job posting by ID
-// router.get("/post/:id", (req, res) => {
-//   const { id } = req.params;
-//   sql_db.query(
-//     `
-//     SELECT
-//       p.id,
-//       p.title,
-//       p.company,
-//       p.location,
-//       p.category,
-//       p.employmentType,
-//       p.posted_at AS posted,
-//       p.description,
-//       p.address,
-//       GROUP_CONCAT(DISTINCT r.responsibility SEPARATOR '; ') AS responsibilities,
-//       GROUP_CONCAT(DISTINCT rq.requirement SEPARATOR '; ') AS requirements
-//     FROM
-//       posts p
-//     LEFT JOIN
-//       responsibilities r ON p.id = r.post_id
-//     LEFT JOIN
-//       requirements rq ON p.id = rq.post_id
-//     WHERE
-//       p.id = ?
-//     GROUP BY
-//       p.id
-//   `,
-//     [id],
-//     (err, results) => {
-//       if (err) {
-//         return res.status(500).json({ error: err.message });
-//       }
-//       if (results.length === 0) {
-//         return res.status(404).json({ message: "Job posting not found" });
-//       }
-//       res.json(results[0]);
-//     }
-//   );
-// });
-
-// // Update a job posting by ID
-// router.put("/post/:id", verifyToken, (req, res) => {
-//   const { id } = req.params;
-//   const {
-//     title,
-//     description,
-//     responsibilities,
-//     requirements,
-//     salary,
-//     location,
-//     address,
-//   } = req.body;
-//   sql_db.query(
-//     "UPDATE posts SET title = ?, description = ?, salary = ?, location = ?, address = ? WHERE id = ?",
-//     [title, description, salary, location, address, id],
-//     (err, results) => {
-//       if (err) {
-//         return res.status(500).json({ error: err.message });
-//       }
-//       if (results.affectedRows === 0) {
-//         return res.status(404).json({ message: "Job posting not found" });
-//       }
-
-//       // Update responsibilities
-//       if (responsibilities) {
-//         sql_db.query(
-//           "DELETE FROM responsibilities WHERE post_id = ?",
-//           [id],
-//           (err) => {
-//             if (err) {
-//               return res.status(500).json({ error: err.message });
-//             }
-//             const responsibilityValues = responsibilities.map((r) => [id, r]);
-//             sql_db.query(
-//               "INSERT INTO responsibilities (post_id, responsibility) VALUES ?",
-//               [responsibilityValues],
-//               (err) => {
-//                 if (err) {
-//                   return res.status(500).json({ error: err.message });
-//                 }
-//               }
-//             );
-//           }
-//         );
-//       }
-
-//       // Update requirements
-//       if (requirements) {
-//         sql_db.query(
-//           "DELETE FROM requirements WHERE post_id = ?",
-//           [id],
-//           (err) => {
-//             if (err) {
-//               return res.status(500).json({ error: err.message });
-//             }
-//             const requirementValues = requirements.map((r) => [id, r]);
-//             sql_db.query(
-//               "INSERT INTO requirements (post_id, requirement) VALUES ?",
-//               [requirementValues],
-//               (err) => {
-//                 if (err) {
-//                   return res.status(500).json({ error: err.message });
-//                 }
-//               }
-//             );
-//           }
-//         );
-//       }
-
-//       res.json({ message: "Job posting updated successfully" });
-//     }
-//   );
-// });
-
-// // Delete a job posting by ID
-// router.delete("/post/:id", verifyToken, (req, res) => {
-//   const { id } = req.params;
-//   sql_db.query("DELETE FROM posts WHERE id = ?", [id], (err, results) => {
-//     if (err) {
-//       return res.status(500).json({ error: err.message });
-//     }
-//     if (results.affectedRows === 0) {
-//       return res.status(404).json({ message: "Job posting not found" });
-//     }
-//     res.json({ message: "Job posting deleted successfully" });
-//   });
-// });
-
-// export default router;
