@@ -79,7 +79,7 @@ router.post("/signup", (req, res) => {
       "INSERT INTO useraccount (email, phone, password, username) VALUES (?, ?, ?, ?)";
 
     const insertUserParams = [
-      identifier.includes("@mlab.com") ? identifier : null,
+      identifier.includes("@jobseeker.com") ? identifier : null,
       /^\d+$/.test(identifier) ? identifier : null,
       hashedPassword,
       generatedUsername,

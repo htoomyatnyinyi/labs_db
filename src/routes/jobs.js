@@ -3,11 +3,97 @@ import { sql_db } from "../db/db.js";
 import authenticate from "../middleware/authenticate.js";
 
 const router = express.Router();
+
 router.post("/post", authenticate, (req, res) => {
   const data = req.body;
   console.log(data, "post");
 });
-// Add a new job post with responsibilities and requirements
+
+// This code responsibilites and requirement not working with db from frontend and .rest api
+// // Add a new job post with responsibilities and requirements
+// router.post("/jobs", authenticate, (req, res) => {
+//   const {
+//     title,
+//     description,
+//     salary,
+//     location,
+//     address,
+//     company_name,
+//     license,
+//     category,
+//     company_logo,
+//     post_img,
+//     employmentType,
+//     responsibilities,
+//     requirements,
+//   } = req.body;
+
+//   const postQuery = `INSERT INTO jobPost (title, description, salary, location, address, company_name, license, category, company_logo, post_img, employmentType) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+
+//   sql_db.query(
+//     postQuery,
+//     [
+//       title,
+//       description,
+//       salary,
+//       location,
+//       address,
+//       company_name,
+//       license,
+//       category,
+//       company_logo,
+//       post_img,
+//       employmentType,
+//     ],
+//     (err, postResults) => {
+//       if (err) return res.status(500).json({ error: err.message });
+
+//       const postId = postResults.insertId;
+
+//       // Insert responsibilities
+//       const responsibilityQuery = `INSERT INTO jobResponsibilities (post_id, responsibility) VALUES ?`;
+//       // Validate responsibilities
+//       if (!Array.isArray(responsibilities)) {
+//         return res
+//           .status(400)
+//           .json({ error: "Responsibilities must be an array." });
+//       }
+
+//       try {
+//         const responsibilityValues = responsibilities.map((resp) => [resp]);
+
+//         // Proceed with your database logic
+//         console.log("Mapped Responsibilities:", responsibilityValues);
+//       } catch (error) {
+//         console.error("Error:", error.message);
+//         res.status(500).json({ error: "Internal Server Error" });
+//       }
+
+//       //   const responsibilityValues = responsibilities.map((resp) => [
+//       //     postId,
+//       //     resp,
+//       //   ]);
+
+//       sql_db.query(responsibilityQuery, [responsibilityValues], (err) => {
+//         if (err) return res.status(500).json({ error: err.message });
+
+//         // Insert requirements
+//         const requirementQuery = `INSERT INTO jobRequirements (post_id, requireme nt) VALUES ?`;
+//         const requirementValues = requirements.map((req) => [postId, req]);
+
+//         sql_db.query(requirementQuery, [requirementValues], (err) => {
+//           if (err) return res.status(500).json({ error: err.message });
+
+//           res
+//             .status(201)
+//             .json({ message: "Job post created successfully", postId });
+//         });
+//       });
+//     }
+//   );
+// });
+
+// Add a new job post
 router.post("/jobs", authenticate, (req, res) => {
   const {
     title,
@@ -24,6 +110,13 @@ router.post("/jobs", authenticate, (req, res) => {
     responsibilities,
     requirements,
   } = req.body;
+
+  // Validate inputs
+  if (!Array.isArray(responsibilities) || !Array.isArray(requirements)) {
+    return res.status(400).json({
+      error: "Responsibilities and Requirements must be arrays.",
+    });
+  }
 
   const postQuery = `INSERT INTO jobPost (title, description, salary, location, address, company_name, license, category, company_logo, post_img, employmentType) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
@@ -49,33 +142,16 @@ router.post("/jobs", authenticate, (req, res) => {
 
       // Insert responsibilities
       const responsibilityQuery = `INSERT INTO jobResponsibilities (post_id, responsibility) VALUES ?`;
-      // Validate responsibilities
-      if (!Array.isArray(responsibilities)) {
-        return res
-          .status(400)
-          .json({ error: "Responsibilities must be an array." });
-      }
-
-      try {
-        const responsibilityValues = responsibilities.map((resp) => [resp]);
-
-        // Proceed with your database logic
-        console.log("Mapped Responsibilities:", responsibilityValues);
-      } catch (error) {
-        console.error("Error:", error.message);
-        res.status(500).json({ error: "Internal Server Error" });
-      }
-
-      //   const responsibilityValues = responsibilities.map((resp) => [
-      //     postId,
-      //     resp,
-      //   ]);
+      const responsibilityValues = responsibilities.map((resp) => [
+        postId,
+        resp,
+      ]);
 
       sql_db.query(responsibilityQuery, [responsibilityValues], (err) => {
         if (err) return res.status(500).json({ error: err.message });
 
         // Insert requirements
-        const requirementQuery = `INSERT INTO jobRequirements (post_id, requireme nt) VALUES ?`;
+        const requirementQuery = `INSERT INTO jobRequirements (post_id, requirement) VALUES ?`;
         const requirementValues = requirements.map((req) => [postId, req]);
 
         sql_db.query(requirementQuery, [requirementValues], (err) => {

@@ -3,6 +3,16 @@
 ##############################################################
 
 
+POST http://localhost:8080/signup
+Content-Type: application/json
+# // phone / email@job
+#  5 | blah     | blah@mlab.com | NULL  | $2b$10$BAFopjmGOCRg2JspoUBHheWtTfC0cQTs0Ahn05GEDzBn.Z29WS7Ha | NULL       | NULL      | NULL   | NULL          | NULL     |        0 |      1 | NULL | NULL        | NULL      | 2024-12-26 21:48:59 | 2024-12-26 21:48:59 
+{
+    "identifier": "blah@mlab.com",
+    "password": "labs",
+    "confirmPassword": "labs"
+}
+###
 POST http://localhost:8080/signin
 Content-Type: application/json
 
@@ -12,26 +22,17 @@ Content-Type: application/json
 }
 ###
 
-POST http://localhost:8080/signup
-Content-Type: application/json
-
-{
-    "identifier": "labs@mlab.com",
-    "password": "labs",
-    "confirmPassword": "labs"
-}
-###
 GET http://localhost:8080/profile
 ###
 PUT http://localhost:8080/profile
 Content-Type: application/json
 
 {
-    "username": "abc",
-    "phone": "1234567328",
-    "first_name": "a",
-    "last_name": "f",
-    "gender": "male"
+    "username": "abcdef",
+    "phone": "8432342233",
+    "first_name": "faa",
+    "last_name": "fee",
+    "gender": "female"
 }
 ###
 
@@ -41,20 +42,29 @@ POST http://localhost:8080/jobs
 Content-Type: application/json
 
 {
-    "title": "Software Engi333neer",
-    "description": "Develop and maintain software applications.",
-    "company_name": "Acme Corp",
+    "title": "Embedded Developer",
+    "description": "Develop  web  applications.",
+    "company_name": "Lab Corp",
     "employmentType": "Full-time",
-    "salary": 80000,
-    "location": "New York",
+    "salary": 3000,
+    "location": "Myanmar York",
     "address": "123 Main St",
-    "license": "Some license",
+    "license": "Company Liscense",
     "category": "Technology",
     "company_logo": "logo.png",
     "post_img": "image.jpg",
-    "responsibilities": "Coding, testing",
-    "requirements": "Java, Python"
+    "responsibilities": ["Cokding", "Baiflk", "Aeio"],
+    "requirements": ["Java, Python"]
 }
 
 ###
-GET http://localhost:8080/jobs/
+GET http://localhost:8080/jobs/13
+###
+GET http://localhost:8080/user/3
+###
+POST http://localhost:8080/post
+Content-Type: application/json
+
+{
+    "name": "labh"
+}
