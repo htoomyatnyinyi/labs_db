@@ -42,23 +42,28 @@ POST http://localhost:8080/jobs
 Content-Type: application/json
 
 {
-    "title": "Embedded Developer",
+    "title": "Developer",
     "description": "Develop  web  applications.",
     "company_name": "Lab Corp",
     "employmentType": "Full-time",
-    "salary": 3000,
-    "location": "Myanmar York",
+    "salary": 2000,
+    "location": "Myanmar",
     "address": "123 Main St",
     "license": "Company Liscense",
     "category": "Technology",
     "company_logo": "logo.png",
     "post_img": "image.jpg",
-    "responsibilities": ["Cokding", "Baiflk", "Aeio"],
-    "requirements": ["Java, Python"]
+    "responsibilities": ["Cooking", "Testing", "Deploying", "blah"],
+    "requirements": ["Java", "Python", "C", "C++", "Linux", "Window OS", "Macos"]
 }
 
 ###
-GET http://localhost:8080/jobs/13
+# "requirements": ["Java, Script, Work"]
+
+###
+GET http://localhost:8080/jobs/14
+###
+GET http://localhost:8080/jobs
 ###
 GET http://localhost:8080/user/3
 ###
@@ -68,3 +73,7 @@ Content-Type: application/json
 {
     "name": "labh"
 }
+###
+GET http://localhost:8080/pdf/lab_sample.pdf
+
+###

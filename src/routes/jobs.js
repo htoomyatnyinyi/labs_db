@@ -172,6 +172,7 @@ router.get("/jobs", (req, res) => {
     if (err) return res.status(500).json({ error: err.message });
     if (getJobs.length === 0)
       return res.status(404).json({ message: "Job post not found" });
+
     res.json(getJobs);
   });
 });
@@ -288,3 +289,16 @@ router.delete("/jobs/:id", (req, res) => {
 });
 
 export default router;
+// SELECT
+// jp.*,
+// GROUP_CONCAT(jr.responsibility SEPARATOR ', ') AS responsibilities,
+// GROUP_CONCAT(jrq.requirement SEPARATOR ', ') AS requirements
+// FROM
+// jobpost jp
+// LEFT JOIN
+// jobResponsibilities jr ON 1=1
+// LEFT JOIN
+// jobRequirements jrq ON jp.id = jrq.post_id
+// GROUP BY
+// jp.id
+4;

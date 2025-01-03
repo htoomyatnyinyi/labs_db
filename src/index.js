@@ -11,6 +11,7 @@ import authRoute from "./routes/auth.js";
 import messageRoute from "./routes/messages.js";
 import userRoute from "./routes/user.js";
 import jobRoute from "./routes/jobs.js";
+import resumeRoute from "./routes/resume.js";
 
 // SERVER config
 dotenv.config();
@@ -62,6 +63,8 @@ app.use(
 app.use("/", authRoute);
 app.use("/", userRoute);
 app.use("/", jobRoute);
+app.use("/", resumeRoute);
+
 app.use("/", messageRoute(io));
 
 server.listen(PORT, () => {

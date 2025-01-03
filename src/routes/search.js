@@ -1,6 +1,5 @@
 import express from "express";
 import { sql_db } from "../db.js"; // Assuming sql_db is your database connection
-import verifyToken from "../middleware/verifyToken.js"; // Middleware to verify JWT token
 
 const router = express.Router();
 
@@ -8,7 +7,7 @@ const router = express.Router();
 router.get("/search", (req, res) => {
   const searchTerm = req.query.q;
   sql_db.query(
-    "SELECT * FROM posts WHERE title LIKE ?",
+    "SELECT * FROM jobPost WHERE title LIKE ?",
     [`%${searchTerm}%`],
     (err, results) => {
       if (err) {
