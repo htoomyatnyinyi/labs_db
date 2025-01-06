@@ -50,6 +50,7 @@ app.use(
     credentials: true, // Allow cookies to be sent
   })
 );
+
 app.use(
   session({
     secret: "htoomyatnyinyi", // a secret key to encrypt the cookies

@@ -21,7 +21,7 @@ const generateToken = (user) =>
   jwt.sign(
     { id: user.id, username: user.username, email: user.email },
     process.env.JWT_SECRET,
-    { expiresIn: "1h" }
+    { expiresIn: "1h" } // '1h, 1m'
   );
 
 const setAuthCookie = (res, authToken) => {
@@ -29,7 +29,7 @@ const setAuthCookie = (res, authToken) => {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production", // Use HTTPS in production
     sameSite: "strict", // Important for CSRF protection
-    maxAge: 86400000, // 1 day (in milliseconds)
+    maxAge: 60000, // 1 day (in milliseconds = 86400000)
     path: "/", // Crucial: Makes the cookie available across your entire site
     // domain: ".yourdomain.com", // Only needed if your frontend is on a subdomain
   });

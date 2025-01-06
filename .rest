@@ -7,8 +7,9 @@ POST http://localhost:8080/signup
 Content-Type: application/json
 # // phone / email@job
 #  5 | blah     | blah@mlab.com | NULL  | $2b$10$BAFopjmGOCRg2JspoUBHheWtTfC0cQTs0Ahn05GEDzBn.Z29WS7Ha | NULL       | NULL      | NULL   | NULL          | NULL     |        0 |      1 | NULL | NULL        | NULL      | 2024-12-26 21:48:59 | 2024-12-26 21:48:59 
+
 {
-    "identifier": "blah@mlab.com",
+    "identifier": "labsf@mlab.com",
     "password": "labs",
     "confirmPassword": "labs"
 }
@@ -17,7 +18,7 @@ POST http://localhost:8080/signin
 Content-Type: application/json
 
 {
-    "identifier": "labs@mlab.com",
+    "identifier": "labsf",
     "password": "labs"
 }
 ###
@@ -75,5 +76,58 @@ Content-Type: application/json
 }
 ###
 GET http://localhost:8080/pdf/lab_sample.pdf
+###
+GET http://localhost:8080/pdf/lab_Digital Forensics Lab Guide.pdf
 
 ###
+POST http://localhost:8080/upload
+Content-Type: multipart/form-data
+
+{
+    "data": "1001010101010"
+}
+
+###
+POST http://localhost:8080/apply-job
+Content-Type: application/json
+
+{
+    "user_id": "3",
+    "job_id": "2",
+    "resume_id": "5"
+}
+###
+GET http://localhost:8080/applied-job
+###
+GET http://localhost:8080/saved-job
+
+###
+POST http://localhost:8080/signin
+Content-Type: application/json
+
+{
+    "identifier": "lab",
+    "password": "lab"
+}
+
+# {
+#     "identifier": "labsf",
+#     "password": "labs"
+# }
+
+###
+POST http://localhost:8080/apply-job
+Content-Type: application/json
+
+{
+    "post_id": 1,
+    "resume_id": 1
+}
+
+###
+POST http://localhost:8080/save-job
+Content-Type: application/json
+
+{
+    "post_id": 1
+}

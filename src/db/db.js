@@ -97,7 +97,30 @@ sql_db.connect((err) => {
           uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
           updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
         )`,
-        // Create 'userAppliedJob' table
+
+        // // Create 'userAppliedJob' table
+        // `CREATE TABLE IF NOT EXISTS userAppliedJob (
+        //   id INT AUTO_INCREMENT PRIMARY KEY,
+        //   user_id INT NOT NULL,
+        //   post_id INT NOT NULL,
+        //   resume_id INT NOT NULL,
+        //   FOREIGN KEY (user_id) REFERENCES userAccount(id),
+        //   FOREIGN KEY (post_id) REFERENCES jobPost(id),
+        //   FOREIGN KEY (resume_id) REFERENCES userResume(id),
+        //   status ENUM('pending', 'interviewed', 'rejected', 'offered') NOT NULL DEFAULT 'pending',
+        //   applied BOOLEAN DEFAULT TRUE,
+        //   applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        //   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+        // )`,
+        // // Create 'userSaveJob' table
+        // `CREATE TABLE userSaveJob (
+        //   save_id INT AUTO_INCREMENT PRIMARY KEY,
+        //   user_id INT NOT NULL,
+        //   post_id INT NOT NULL,
+        //   FOREIGN KEY (user_id) REFERENCES userAccount(id),
+        //   FOREIGN KEY (post_id) REFERENCES jobPost(post_id)
+        //   saved_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        // )`,
         `CREATE TABLE IF NOT EXISTS userAppliedJob (
           id INT AUTO_INCREMENT PRIMARY KEY,
           user_id INT NOT NULL,
@@ -110,7 +133,16 @@ sql_db.connect((err) => {
           applied BOOLEAN DEFAULT TRUE,
           applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
           updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-        )`,
+      )`,
+        // Creaet 'userSaveJob' table
+        `CREATE TABLE IF NOT EXISTS userSaveJob (
+          save_id INT AUTO_INCREMENT PRIMARY KEY,
+          user_id INT NOT NULL,
+          post_id INT NOT NULL,
+          FOREIGN KEY (user_id) REFERENCES userAccount(id),
+          FOREIGN KEY (post_id) REFERENCES jobPost(id),
+          saved_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )`,
       ];
 
       // Execute all the table creation queries

@@ -1,6 +1,6 @@
 import express from "express";
-import { sql_db } from "../db.js"; // Assuming sql_db is your database connection
-
+// import { sql_db } from "../db.js"; // Assuming sql_db is your database connection
+import { sql_db } from "../db/db.js";
 const router = express.Router();
 
 // API endpoint for search
