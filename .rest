@@ -43,7 +43,7 @@ POST http://localhost:8080/jobs
 Content-Type: application/json
 
 {
-    "title": "Developer",
+    "title": "Developefefr",
     "description": "Develop  web  applications.",
     "company_name": "Lab Corp",
     "employmentType": "Full-time",

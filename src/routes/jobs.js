@@ -3,14 +3,7 @@ import { sql_db } from "../db/db.js";
 import authenticate from "../middleware/authenticate.js";
 
 const router = express.Router();
-router.get("/get", (req, res) => {
-  sql_db.query("select * from userappliedjob", (err, result) => {
-    if (err) return res.status(500).json({ err: err.message });
-    // const dat = result;
-    res.send(result);
-  });
-  // res.json(data);
-});
+
 // This code responsibilites and requirement not working with db from frontend and .rest api
 // // Add a new job post with responsibilities and requirements
 // router.post("/jobs", authenticate, (req, res) => {
