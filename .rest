@@ -131,3 +131,10 @@ Content-Type: application/json
 {
     "post_id": 1
 }
+###
+GET http://localhost:8080/users
+###
+
+GET http://localhost:8080/dashboard
+###
+DELETE http://localhost:8080/jobs/6

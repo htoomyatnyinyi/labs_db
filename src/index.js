@@ -12,6 +12,7 @@ import messageRoute from "./routes/messages.js";
 import userRoute from "./routes/user.js";
 import jobRoute from "./routes/jobs.js";
 import resumeRoute from "./routes/resume.js";
+import dashboardRoute from "./routes/utils/dashboard.js";
 
 // SERVER config
 dotenv.config();
@@ -65,6 +66,7 @@ app.use("/", authRoute);
 app.use("/", userRoute);
 app.use("/", jobRoute);
 app.use("/", resumeRoute);
+app.use("/", dashboardRoute);
 
 app.use("/", messageRoute(io));
 

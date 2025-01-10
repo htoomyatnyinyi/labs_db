@@ -273,13 +273,31 @@ router.put("/jobs/:id", (req, res) => {
 });
 
 // Delete a job post with its responsibilities and requirements
+// router.delete("/jobs/:id", (req, res) => {
+//   const { id } = req.params;
+
+//   const query = `DELETE FROM jobPost WHERE id = ?`;
+//   sql_db.query(query, [id], (err) => {
+//     if (err) return res.status(500).json({ error: err.message });
+//     res.json({ message: "Job post deleted successfully" });
+//   });
+// });
+
 router.delete("/jobs/:id", (req, res) => {
   const { id } = req.params;
 
-  const query = `DELETE FROM jobPost WHERE id = ?`;
-  sql_db.query(query, [id], (err) => {
+  // Delete related entries in userappliedjob
+  const deleteAppliedJobsQuery = `DELETE FROM userappliedjob WHERE post_id = ?`;
+  sql_db.query(deleteAppliedJobsQuery, [id], (err) => {
     if (err) return res.status(500).json({ error: err.message });
-    res.json({ message: "Job post deleted successfully" });
+
+    // Delete the job post
+    const deleteJobQuery = `DELETE FROM jobpost WHERE id = ?`;
+    sql_db.query(deleteJobQuery, [id], (err) => {
+      if (err) return res.status(500).json({ error: err.message });
+
+      res.json({ message: "Job post deleted successfully" });
+    });
   });
 });
 // #############################################
