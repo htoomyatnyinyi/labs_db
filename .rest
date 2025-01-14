@@ -29,13 +29,17 @@ PUT http://localhost:8080/profile
 Content-Type: application/json
 
 {
-    "username": "abcdef",
-    "phone": "8432342233",
-    "first_name": "faa",
-    "last_name": "fee",
-    "gender": "female"
+  "location": "Mawlamyine",
+  "bios": "I'm self Developer"
 }
 ###
+    # "date_of_birth" : "1990-01-15"
+    # "email": "test@efg.com"
+    # "first_name": "efe"
+    # "gender": "male"
+    # "username": "abcdef"
+    # "phone": "8432342233"
+    # "last_name": "fee"
 
 # DELETE http://localhost:8080/profile
 ### 
@@ -138,3 +142,37 @@ GET http://localhost:8080/users
 GET http://localhost:8080/dashboard
 ###
 DELETE http://localhost:8080/jobs/6
+###
+POST http://localhost:8080/submit-resume
+Content-Type: application/json
+
+{
+  "personalInfo": {
+    "name": "Hnin Phyu",
+    "email": "hninphyu@gmail.com",
+    "phone": "93242342"
+  },
+  "summary": {
+    "null": "[object Object]e"
+  },
+  "experience": [
+    {
+      "role": "Sale Professioanl",
+      "company": "Micro Lab",
+      "duration": "3 years (2010-2022)",
+      "description": "lafjwelkfjalkfjklfklwjwlk"
+    }
+  ],
+  "skills": [
+    "ff",
+    "fei",
+    "flweiakfj",
+    "fweakfjaw",
+    "f"
+  ],
+  "education": {
+    "degree": "Bachelor Degree",
+    "school": "Hpa An",
+    "year": "2019"
+  }
+}

@@ -43,6 +43,24 @@ router.post("/upload", authenticate, upload.single("file"), (req, res) => {
   );
 });
 
+router.post("/submit-resume", async (req, res) => {
+  const resumeData = req.body; // Get the submitted resume data
+  console.log(JSON.stringify(resumeData));
+  // try {
+  //   const query = `INSERT INTO resumes (data) VALUES (?)`;
+  //   sql_db.query(query, [JSON.stringify(resumeData)], (err, result) => {
+  //     if (err) {
+  //       console.error("Error inserting resume:", err);
+  //       return res.status(500).json({ error: "Failed to write resume" });
+  //     }
+  //     res.status(200).json({ message: "Resume update successfully" });
+  //   });
+  // } catch (error) {
+  //   console.error(error);
+  //   res.status(500).json({ message: "Error submitting resume" });
+  // }
+});
+
 // Route to fetch the latest resume for the logged-in user
 router.get("/resume", authenticate, (req, res) => {
   const userId = req.user.id;

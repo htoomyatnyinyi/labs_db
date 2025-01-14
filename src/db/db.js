@@ -97,10 +97,16 @@ sql_db.connect((err) => {
           uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
           updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
         )`,
-
-        // // Create 'userAppliedJob' table
-        // `CREATE TABLE IF NOT EXISTS userAppliedJob (
-        //   id INT AUTO_INCREMENT PRIMARY KEY,
+        `CREATE TABLE IF NOT EXISTS resumes (
+          id INT AUTO_INCREMENT PRIMARY KEY,
+          personal_info JSON NOT NULL,
+          summary TEXT,
+          experience JSON NOT NULL,
+          skills TEXT,
+          education JSON NOT NULL,
+          created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )`,
+        //   id INT AUTO_INCREMENT PRIMARY KEY, // `CREATE TABLE IF NOT EXISTS userAppliedJob ( // // Create 'userAppliedJob' table
         //   user_id INT NOT NULL,
         //   post_id INT NOT NULL,
         //   resume_id INT NOT NULL,
