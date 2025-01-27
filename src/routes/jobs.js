@@ -196,6 +196,14 @@ router.get("/jobs/:id", (req, res) => {
           responsibilities: responsibilities.map((r) => r.responsibility),
           requirements: requirements.map((r) => r.requirement),
         });
+        // // add get status here
+        const getStatusQuery = `SELECT  status FROM userAppliedJob WHERE post_id = ?`;
+
+        sql_db.query(getStatusQuery, [id], (err, results) => {
+          if (err) return res.status(500).json({ error: err.message });
+          console.log(results, " status ဘက်အင်း ");
+          // res.status(200).json(results);
+        });
       });
     });
   });
@@ -368,26 +376,120 @@ router.delete("/jobs/:id", (req, res) => {
 // ###################################
 // ########## AFTER EDIT By Profile Id #############
 // ###################################
+// const getApplicationStatus = (userId) => {
+//   return new Promise((resolve, reject) => {
+//     sql_db.query(query, [userId], (err, results) => {
+//       if (err) return reject(err);
+//       resolve(results);
+//     });
+//   });
+// };
+
+router.get("/status", authenticate, (req, res) => {
+  // const userId = req.user.id;
+  const { post_id } = req.body;
+  const getStatusQuery = `SELECT  status FROM userAppliedJob WHERE post_id = ?`;
+
+  sql_db.query(getStatusQuery, [post_id], (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+    console.log(results, " status : peindinjg");
+    res.status(200).json(results);
+  });
+});
 
 router.post("/apply-job", authenticate, (req, res) => {
   const userId = req.user.id;
   const { post_id, resume_id } = req.body;
 
-  console.log(post_id, resume_id, "from apply job frontend to backend");
+  console.log(
+    userId,
+    "userid",
+    "jobid",
+    post_id,
+    "resume id",
+    resume_id,
+    "from apply job frontend to backend"
+  );
+  const checkApplyQuery = `SELECT * FROM userAppliedJob WHERE user_id = ? AND post_id = ?`;
+  const checkApplyParams = [userId, post_id];
 
   try {
-    sql_db.query(
-      `INSERT INTO userAppliedJob (user_id, post_id, resume_id) VALUES (?, ?, ?)`,
-      [userId, post_id, resume_id],
-      (err, results) => {
-        if (err) return res.status(500).json({ err: "error" });
-        res.status(200).json({ message: "Applied Successfully" });
+    sql_db.query(checkApplyQuery, checkApplyParams, (err, results) => {
+      if (err) return res.status(500).json({ error: err.message });
+      if (results.length > 0) {
+        sql_db.query(
+          `SELECT post_id,status from userAppliedJob  where post_id=? `,
+          [post_id],
+          (err, results) => {
+            if (err) return res.status(500).json({ err: "error" });
+            return res
+              .status(200)
+              .json({ message: "User Applied Successfully Alreay ", results });
+          }
+        );
+        // return res.status(400).json({ message: "Applied already" });
       }
-    );
+
+      sql_db.query(
+        `INSERT INTO userAppliedJob (user_id, post_id, resume_id) VALUES (?, ?, ?)`,
+        [userId, post_id, resume_id],
+        (err, results) => {
+          if (err) return res.status(500).json({ err: "error" });
+
+          sql_db.query(
+            `SELECT post_id,status from userAppliedJob where post_id=?`,
+            [post_id],
+            (err, results) => {
+              if (err) return res.status(500).json({ err: "error" });
+              res
+                .status(200)
+                .json({ message: "Applied Successfully", results });
+            }
+          );
+        }
+      );
+    });
   } catch (error) {
     res.status(500).json({ message: "Error fetching applied jobs", error });
   }
 });
+// backup
+// router.post("/apply-job", authenticate, (req, res) => {
+//   const userId = req.user.id;
+//   const { post_id, resume_id } = req.body;
+
+//   console.log(
+//     userId,
+//     "userid",
+//     "jobid",
+//     post_id,
+//     "resume id",
+//     resume_id,
+//     "from apply job frontend to backend"
+//   );
+
+//   try {
+//     sql_db.query(
+//       `INSERT INTO userAppliedJob (user_id, post_id, resume_id) VALUES (?, ?, ?)`,
+//       [userId, post_id, resume_id],
+//       (err, results) => {
+//         if (err) return res.status(500).json({ err: "error" });
+
+//         sql_db.query(
+//           `SELECT post_id,status from userAppliedJob where post_id=?`,
+//           [post_id],
+//           (err, results) => {
+//             if (err) return res.status(500).json({ err: "error" });
+//             res.status(200).json({ message: "Applied Successfully", results });
+//           }
+//         );
+//       }
+//     );
+//   } catch (error) {
+//     res.status(500).json({ message: "Error fetching applied jobs", error });
+//   }
+// });
+
 router.post("/save-job", authenticate, (req, res) => {
   const userId = req.user.id;
   const { post_id } = req.body;
@@ -425,6 +527,24 @@ router.get("/applied-job", authenticate, (req, res) => {
     res.status(500).json({ message: "Error fetching applied jobs", error });
   }
 });
+// router.get("/applied-job", authenticate, (req, res) => {
+//   const userId = req.user.id;
+
+//   try {
+//     sql_db.query(
+//       `SELECT * FROM userAppliedJob WHERE user_id = ?`,
+//       [userId],
+//       (error, result) => {
+//         if (error) return res.status(500).json(error.message);
+//         res.send(result);
+//       }
+//     );
+//     // res.status(200).json(result);
+//   } catch (error) {
+//     res.status(500).json({ message: "Error fetching applied jobs", error });
+//   }
+// });
+
 router.get("/saved-job", authenticate, (req, res) => {
   const userId = req.user.id;
 

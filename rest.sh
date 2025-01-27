@@ -23,10 +23,6 @@ Content-Type: application/json
 }
 ###
 
-GET http://localhost:8080/dashboard/stats
-
-###
-
 GET http://localhost:8080/profile
 ###
 PUT http://localhost:8080/profile
@@ -88,6 +84,14 @@ GET http://localhost:8080/pdf/lab_sample.pdf
 GET http://localhost:8080/pdf/lab_Digital Forensics Lab Guide.pdf
 
 ###
+POST http://localhost:8080/upload
+Content-Type: multipart/form-data
+
+{
+    "data": "1001010101010"
+}
+
+###
 POST http://localhost:8080/apply-job
 Content-Type: application/json
 
@@ -106,8 +110,8 @@ POST http://localhost:8080/signin
 Content-Type: application/json
 
 {
-    "identifier": "nyi",
-    "password": "labs"
+    "identifier": "lab",
+    "password": "lab"
 }
 
 # {
@@ -120,30 +124,16 @@ POST http://localhost:8080/apply-job
 Content-Type: application/json
 
 {
-    "post_id": 14,
+    "post_id": 1,
     "resume_id": 1
 }
-###
-GET http://localhost:8080/status
-Content-Type: application/json
 
-{
-  "post_id": 1
-}
 ###
 POST http://localhost:8080/save-job
 Content-Type: application/json
 
 {
-    "post_id": 2
-}
-###
-POST http://localhost:8080/apply/apply-job
-Content-Type: application/json
-
-{
-    "post_id": 14,
-    "resume_id": 1
+    "post_id": 1
 }
 ###
 GET http://localhost:8080/users
@@ -186,5 +176,3 @@ Content-Type: application/json
     "year": "2019"
   }
 }
-###
-GET http://localhost:8080/dashboard/stats
